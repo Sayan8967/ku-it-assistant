@@ -43,13 +43,13 @@ jobs:
         with:
           context: .
           push: false
-          tags: ${{ secrets.DOCKER_REGISTRY }}/ku-it-assistant:${{ github.sha }}
+          tags: sayan896/ku-it-assistant:${{ github.sha }}
           file: Dockerfile
           build-args: |
             ACCESS_TOKEN=${{ secrets.REACT_APP_HF_API_KEY }}
       - name: Push Docker image
         run: |
-          docker push ${{ secrets.DOCKER_REGISTRY }}/ku-it-assistant:${{ github.sha }}
+          docker push sayan896/ku-it-assistant:${{ github.sha }}
 
   trivy-scan:
     needs: docker
