@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install
+        run: npm ci
+      - name: Run tests
+        run: npm test
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm ci
+      - run: npm run build
+      - run: npm prune --production
+
+  docker:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build & push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKER_REGISTRY }}/ku-it-assistant:${{ github.sha }}
+          file: Dockerfile
+
+  trivy-scan:
+    needs: docker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ secrets.DOCKER_REGISTRY }}/ku-it-assistant:${{ github.sha }}
+
+  k8s-manifest:
+    needs: trivy-scan
+    runs-on: ubuntu-latest
+    outputs:
+      manifest: ${{ steps.manifest.outputs.content }}
+    steps:
+      - name: Generate Kubernetes manifest
+        id: manifest
+        run: |
+          cat <<EOF > deployment.yaml
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: ku-it-assistant
+          spec:
+            replicas: 2
+            selector:
+              matchLabels:
+                app: ku-it
+            template:
+              metadata:
+                labels:
+                  app: ku-it
+              spec:
+                containers:
+                - name: assistant
+                  image: ${{ secrets.DOCKER_REGISTRY }}/ku-it-assistant:${{ github.sha }}
+                  ports:
+                  - containerPort: 80
+          EOF
+          echo "::set-output name=content::$(cat deployment.yaml)"
+      - name: Upload manifest
+        uses: actions/upload-artifact@v3
+        with:
+          name: k8s-deployment
+          path: deployment.yaml
