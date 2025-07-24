@@ -1,5 +1,5 @@
 // src/api/hfClient.js
-const API_URL = "https://api-inference.huggingface.co/models/facebook/opt-350m";
+const API_URL = "https://router.huggingface.co/hf-inference/models/distilbert/distilbert-base-uncased";
 const HF_TOKEN = process.env.REACT_APP_HF_TOKEN;
 
 export async function queryLLM(prompt) {
