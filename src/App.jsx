@@ -14,12 +14,25 @@ export default function App() {
   }, [msgs]);
 
   const handleAsk = async (text) => {
+    console.log("🧾 User submitted:", text);
     setMsgs(m => [...m, { from: "You", text }]);
+
     try {
       const answer = await queryLLM(text);
-      setMsgs(m => [...m, { from: "Assistant", text: answer }]);
-    } catch {
-      setMsgs(m => [...m, { from: "Assistant", text: "Sorry, couldn’t reach the AI. Try again." }]);
+      console.log("🤖 DistilBERT processed:", answer);
+
+      // Extract the assistant's response content
+      const assistantResponse = answer.choices?.[0]?.message?.content || JSON.stringify(answer);
+
+      setMsgs(m => [...m, { from: "Assistant", text: assistantResponse }]);
+    } catch (err) {
+      console.error("❌ Error calling queryLLM:", err);
+      setMsgs(m => [...m, { 
+        from: "Assistant", 
+        text: `Error: ${err.message}. Please check your Hugging Face token and try again.` 
+      }]);
+    } finally {
+      console.log("Updated messages:", msgs);
     }
   };
 
