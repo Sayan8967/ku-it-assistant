@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: ku-it-assistant
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: ku-it-assistant
+            template:
+              metadata:
+                labels:
+                  app: ku-it-assistant
+              spec:
+                containers:
+                - name: ku-it-assistant
+                  image: ${{ secrets.DOCKER
