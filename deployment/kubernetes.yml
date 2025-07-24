@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: assistant
-        image: docker.io/sayan896/ku-it-assistant:c28c462fa56e37ab8fab46d9144d6a26c68ab53c
+        image: docker.io/sayan896/ku-it-assistant:d3e2324c9bb901144fd6bbab44bb8e3667191f0f
         ports:
         - containerPort: 80
