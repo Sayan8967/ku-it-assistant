@@ -1,6 +1,12 @@
 # Dockerfile
 FROM node:18-alpine AS builder
 WORKDIR /app
+
+# Accept the access token as a build argument
+ARG ACCESS_TOKEN
+# Optionally set it as an environment variable
+ENV ACCESS_TOKEN=$ACCESS_TOKEN
+
 COPY package*.json ./
 RUN npm ci
 COPY . .

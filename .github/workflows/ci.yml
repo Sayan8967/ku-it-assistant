@@ -37,6 +37,8 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_REGISTRY }}/ku-it-assistant:${{ github.sha }}
           file: Dockerfile
+          build-args: |
+            ACCESS_TOKEN=${{ secrets.REACT_APP_HF_API_KEY }}
 
   trivy-scan:
     needs: docker
