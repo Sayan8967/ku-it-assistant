@@ -3,9 +3,9 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 
 # Accept the access token as a build argument
-ARG ACCESS_TOKEN
+ARG REACT_APP_HF_API_KEY
 # Optionally set it as an environment variable
-ENV ACCESS_TOKEN=$ACCESS_TOKEN
+ENV REACT_APP_HF_API_KEY=$REACT_APP_HF_API_KEY
 
 COPY package*.json ./
 RUN npm ci
