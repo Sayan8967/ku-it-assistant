@@ -97,5 +97,5 @@ jobs:
           git commit -m "Update k8s manifest for ${{ github.sha }}" || echo "No changes to commit"
           git push origin HEAD:${{ github.ref_name }}
         env:
-          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
