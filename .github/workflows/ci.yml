@@ -54,6 +54,62 @@ jobs:
         with:
           image-ref: ${{ secrets.DOCKER_REGISTRY }}/ku-it-assistant:${{ github.sha }}
 
+  name: CI
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install
+        run: npm ci
+      - name: Run tests
+        run: npm test
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm ci
+      - run: npm run build
+      - run: npm prune --production
+
+  docker:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+    
+      - name: Build Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: false
+          tags: ${{ secrets.DOCKER_REGISTRY }}/ku-it-assistant:${{ github.sha }}
+          file: Dockerfile
+          build-args: |
+            REACT_APP_HF_API_KEY=${{ secrets.REACT_APP_HF_API_KEY }}
+      - name: Push Docker image
+        run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_REGISTRY_KEY }}
+          docker push ${{ secrets.DOCKER_REGISTRY }}/ku-it-assistant:${{ github.sha }}
+
+  trivy-scan:
+    needs: docker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ secrets.DOCKER_REGISTRY }}/ku-it-assistant:${{ github.sha }}
+
   k8s-manifest:
     needs: trivy-scan
     runs-on: ubuntu-latest
