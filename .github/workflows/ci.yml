@@ -40,7 +40,7 @@ jobs:
           tags: ${{ secrets.DOCKER_REGISTRY }}/ku-it-assistant:${{ github.sha }}
           file: Dockerfile
           build-args: |
-            ACCESS_TOKEN=${{ secrets.REACT_APP_HF_API_KEY }}
+            REACT_APP_HF_API_KEY=${{ secrets.REACT_APP_HF_API_KEY }}
       - name: Push Docker image
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_REGISTRY_KEY }}
