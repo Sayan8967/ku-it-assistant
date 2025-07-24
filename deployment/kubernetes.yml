@@ -1,17 +1,19 @@
 apiVersion: apps/v1
-          kind: Deployment
-          metadata:
-            name: ku-it-assistant
-          spec:
-            replicas: 1
-            selector:
-              matchLabels:
-                app: ku-it-assistant
-            template:
-              metadata:
-                labels:
-                  app: ku-it-assistant
-              spec:
-                containers:
-                - name: ku-it-assistant
-                  image: ${{ secrets.DOCKER
+kind: Deployment
+metadata:
+  name: ku-it-assistant
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ku-it
+  template:
+    metadata:
+      labels:
+        app: ku-it
+    spec:
+      containers:
+      - name: assistant
+        image: docker.io/sayan896/ku-it-assistant:c28c462fa56e37ab8fab46d9144d6a26c68ab53c
+        ports:
+        - containerPort: 80
