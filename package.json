@@ -23,11 +23,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-<<<<<<< HEAD
-=======
   },
   "devDependencies": {
     "@testing-library/react": "^16.3.0"
->>>>>>> 4a6432f (IT ASSISTANT)
   }
 }
